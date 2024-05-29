@@ -5,6 +5,12 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
+from datetime import datetime, timedelta
+import hashlib
 
 api = Blueprint('api', __name__)
 
@@ -20,3 +26,34 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@api.route('/signup', methods=['POST'])
+def signup():
+    body = request.get_json()
+    user_email = body['email']
+    user_password = hashlib.sha256(body['password'])
+    new_user = User(email = user_email, password = user_password, is_active = True)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify("signup sucessful")
+    
+@api.route('/login' , method=['POST'])
+def login():
+    body = request.get_json()
+    user_email = body['email']
+    user_password = hashlib.sha256(body['password'])
+    user = User.query.filter(email == user_email, password = user_password).first()
+    if user is not None:
+        access_token = create_access_token(identity = user.id)
+        return jsonify(access_token, user)
+    
+@api.route('get-user' , methods=['GET'])
+@jwt_required()
+def get_user():
+    user_id = get_jwt_identity()
+    user = User.query.filter(id = id).first()
+    return jsonify(user)
+    
+    
+    
+    
