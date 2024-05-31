@@ -37,7 +37,7 @@ def signup():
     db.session.commit()
     return jsonify("signup sucessful")
     
-@api.route('/login' , method=['POST'])
+@api.route('/login' , methods=['POST'])
 def login():
     body = request.get_json()
     user_email = body['email']
@@ -45,7 +45,7 @@ def login():
     user = User.query.filter(email == user_email, password = user_password).first()
     if user is not None:
         access_token = create_access_token(identity = user.id)
-        return jsonify(access_token, user)
+        return jsonify(access_token=access_token, user= user)
     
 @api.route('get-user' , methods=['GET'])
 @jwt_required()
