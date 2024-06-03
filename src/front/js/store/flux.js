@@ -15,7 +15,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         },
       ],
       token: sessionStorage.getItem("token"),
-      user: {},
+      user: "",
     },
     actions: {
       // Use getActions to call a function within a fuction
@@ -50,7 +50,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         setStore({ demo: demo });
       },
       signup: async (user_email, user_password) => {
-        let response = await fetch(process.env.BACKEND_URL + "/signup", {
+        let response = await fetch(process.env.BACKEND_URL + "/api/signup", {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: user_email,
@@ -61,8 +61,9 @@ const getState = ({ getStore, getActions, setStore }) => {
         let data = await response.json();
         console.log(data);
       },
+      // [{}.{},{}] <--- json
       userLogin: async (user_email, user_password) => {
-        let response = await fetch(process.env.BACKEND_URL + "/login", {
+        let response = await fetch(process.env.BACKEND_URL + "/api/login", {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: user_email,
@@ -70,9 +71,21 @@ const getState = ({ getStore, getActions, setStore }) => {
           }),
           method: "POST",
         });
-        let data = response.json();
-        sessionStorage.setItem("token", data.access_token);
-        setStore({ user: data.user });
+        let data = await response.json();
+        sessionStorage.setItem("token", data);
+      },
+      getUser: async () => {
+        let store = getStore();
+        let response = await fetch(process.env.BACKEND_URL + "/api/get-user", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + store.token,
+          },
+          method: "GET",
+        });
+        let data = await response.json();
+
+        setStore({ user: data });
       },
     },
   };

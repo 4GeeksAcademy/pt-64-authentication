@@ -31,7 +31,7 @@ def handle_hello():
 def signup():
     body = request.get_json()
     user_email = body['email']
-    user_password = hashlib.sha256(body['password'])
+    user_password = hashlib.sha256(body['password'].encode("utf-8")).hexdigest()
     new_user = User(email = user_email, password = user_password, is_active = True)
     db.session.add(new_user)
     db.session.commit()
@@ -40,19 +40,19 @@ def signup():
 @api.route('/login' , methods=['POST'])
 def login():
     body = request.get_json()
-    user_email = body['email']
-    user_password = hashlib.sha256(body['password'])
-    user = User.query.filter(email == user_email, password = user_password).first()
-    if user is not None:
+    email = body['email']
+    user_password =  hashlib.sha256(body['password'].encode("utf-8")).hexdigest()
+    user = User.query.filter(email == email).first()
+    if user and user.password == user_password:
         access_token = create_access_token(identity = user.id)
-        return jsonify(access_token=access_token, user= user)
+        return jsonify(access_token)
     
 @api.route('get-user' , methods=['GET'])
 @jwt_required()
 def get_user():
-    user_id = get_jwt_identity()
-    user = User.query.filter(id = id).first()
-    return jsonify(user)
+    id = get_jwt_identity()
+    user = User.query.filter(id == id).first()
+    return jsonify(user.serialize())
     
     
     

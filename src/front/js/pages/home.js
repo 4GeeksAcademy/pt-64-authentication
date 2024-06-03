@@ -13,6 +13,9 @@ export const Home = () => {
       <Link to={"/login"} className="btn btn-primary mr-5">
         Login
       </Link>
+      <Link to={"/private"} className="btn btn-primary mr-5">
+        Profile
+      </Link>
     </div>
   );
 };

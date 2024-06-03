@@ -8,7 +8,7 @@ export default function Login() {
 
     const handleLogin = () => {
         if(email !== "" && password !== "" ) {
-            actions.login(email, password)
+            actions.userLogin(email, password)
         }
     }
 

@@ -4,7 +4,7 @@ import { Context } from "../store/appContext";
 export default function Signup() {
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
-	const { store, actions } = useContext(Context);
+	  const { store, actions } = useContext(Context);
 
     const handleSignup = () => {
         if(email !== "" && password !== "" ) {
